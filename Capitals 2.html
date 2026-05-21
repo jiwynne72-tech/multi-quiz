@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced World Geography & Culture Quiz</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-hover: #172554;
+            --success: #15803d;
+            --error: #b91c1c;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --border: #cbd5e1;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #e2e8f0;
+            color: var(--dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 650px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .stats {
+            font-weight: bold;
+            font-size: 1.1rem;
+            background: #dbeafe;
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: var(--light);
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-box {
+            margin-bottom: 25px;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .hint-text {
+            font-size: 0.95rem;
+            color: #334155;
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .btn {
+            background-color: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            width: 100%;
+            color: var(--dark);
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: var(--light);
+            border-color: #94a3b8;
+        }
+
+        .btn.correct {
+            background-color: #dcfce7;
+            border-color: var(--success);
+            color: #14532d;
+            font-weight: 700;
+        }
+
+        .btn.wrong {
+            background-color: #fee2e2;
+            border-color: var(--error);
+            color: #7f1d1d;
+        }
+
+        .next-btn {
+            display: block;
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 25px;
+            text-align: center;
+            transition: background 0.2s;
+        }
+
+        .next-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .results-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .score-display {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+        
+        .feedback-note {
+            margin-top: 15px;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="quiz-screen">
+        <header>
+            <h1 id="question-title">Geography Quiz</h1>
+            <div class="stats">Score: <span id="score">0</span></div>
+        </header>
+        
+        <div class="progress-bar">
+            <div id="progress" class="progress"></div>
+        </div>
+
+        <div class="question-box">
+            <div id="question" class="question-text">Loading question...</div>
+            <div id="hint" class="hint-text"></div>
+        </div>
+
+        <div id="options" class="options-grid">
+            </div>
+
+        <button id="next-button" class="next-btn hide">Next Question</button>
+    </div>
+
+    <div id="results-screen" class="results-screen hide">
+        <h2>Quiz Completed!</h2>
+        <p>Your final score is:</p>
+        <div id="final-score" class="score-display">0/15</div>
+        <p id="feedback-message" style="font-weight: 600; font-size: 1.1rem;"></p>
+        <p class="feedback-note">Every round features a randomized, fresh batch of diverse concepts!</p>
+        <button onclick="resetGame()" class="next-btn">Play Again</button>
+    </div>
+</div>
+
+<script>
+    // Expanded database with richer learning contexts, features, and currencies
+    const countryData = [
+        { country: "France", capital: "Paris", continent: "Europe", currency: "Euro", feature: "The Seine River", borders: ["Spain", "Germany", "Belgium", "Italy", "Switzerland", "Luxembourg"] },
+        { country: "Japan", capital: "Tokyo", continent: "Asia", currency: "Yen", feature: "Mount Fuji", borders: ["none (Island nation)"] },
+        { country: "Brazil", capital: "Brasília", continent: "South America", currency: "Real", feature: "The Amazon Rainforest", borders: ["Argentina", "Colombia", "Peru", "Venezuela", "Uruguay", "Paraguay", "Bolivia", "Guyana", "Suriname", "French Guiana"] },
+        { country: "Egypt", capital: "Cairo", continent: "Africa", currency: "Egyptian Pound", feature: "The Nile River", borders: ["Libya", "Sudan", "Israel", "Gaza Strip"] },
+        { country: "Australia", capital: "Canberra", continent: "Oceania", currency: "Australian Dollar", feature: "The Great Barrier Reef", borders: ["none (Island nation)"] },
+        { country: "Canada", capital: "Ottawa", continent: "North America", currency: "Canadian Dollar", feature: "The Rocky Mountains", borders: ["United States"] },
+        { country: "India", capital: "New Delhi", continent: "Asia", currency: "Indian Rupee", feature: "The Ganges River", borders: ["Pakistan", "China", "Nepal", "Bhutan", "Bangladesh", "Myanmar"] },
+        { country: "South Africa", capital: "Pretoria", continent: "Africa", currency: "Rand", feature: "Kruger National Park", borders: ["Namibia", "Botswana", "Zimbabwe", "Mozambique", "Eswatini", "Lesotho"] },
+        { country: "Germany", capital: "Berlin", continent: "Europe", currency: "Euro", feature: "The Black Forest", borders: ["France", "Austria", "Switzerland", "Poland", "Czechia", "Denmark", "Netherlands", "Belgium", "Luxembourg"] },
+        { country: "Argentina", capital: "Buenos Aires", continent: "South America", currency: "Argentine Peso", feature: "The Patagonia Region", borders: ["Chile", "Bolivia", "Paraguay", "Brazil", "Uruguay"] },
+        { country: "Mexico", capital: "Mexico City", continent: "North America", currency: "Mexican Peso", feature: "Chichen Itza", borders: ["United States", "Guatemala", "Belize"] },
+        { country: "Italy", capital: "Rome", continent: "Europe", currency: "Euro", feature: "Mount Vesuvius", borders: ["France", "Switzerland", "Austria", "Slovenia", "San Marino", "Vatican City"] },
+        { country: "Kenya", capital: "Nairobi", continent: "Africa", currency: "Kenyan Shilling", feature: "The Great Rift Valley", borders: ["Ethiopia", "Somalia", "Tanzania", "Uganda", "South Sudan"] },
+        { country: "Thailand", capital: "Bangkok", continent: "Asia", currency: "Baht", feature: "The Chao Phraya River", borders: ["Myanmar", "Laos", "Cambodia", "Malaysia"] },
+        // Newly added countries to expand pool size
+        { country: "South Korea", capital: "Seoul", continent: "Asia", currency: "Won", feature: "Jeju Island", borders: ["North Korea"] },
+        { country: "Peru", capital: "Lima", continent: "South America", currency: "Sol", feature: "Machu Picchu", borders: ["Ecuador", "Colombia", "Brazil", "Bolivia", "Chile"] },
+        { country: "Switzerland", capital: "Bern", continent: "Europe", currency: "Swiss Franc", feature: "The Matterhorn", borders: ["France", "Germany", "Italy", "Austria", "Liechtenstein"] },
+        { country: "Morocco", capital: "Rabat", continent: "Africa", currency: "Moroccan Dirham", feature: "The Sahara Desert", borders: ["Algeria", "Western Sahara", "Spain"] },
+        { country: "New Zealand", capital: "Wellington", continent: "Oceania", currency: "New Zealand Dollar", feature: "The Southern Alps", borders: ["none (Island nation)"] },
+        { country: "Iceland", capital: "Reykjavík", continent: "Europe", currency: "Icelandic Króna", feature: "The Blue Lagoon", borders: ["none (Island nation)"] },
+        { country: "Turkey", capital: "Ankara", continent: "Asia/Europe", currency: "Turkish Lira", feature: "The Bosphorus Strait", borders: ["Greece", "Bulgaria", "Georgia", "Armenia", "Azerbaijan", "Iran", "Iraq", "Syria"] },
+        { country: "Vietnam", capital: "Hanoi", continent: "Asia", currency: "Dong", feature: "Ha Long Bay", borders: ["China", "Laos", "Cambodia"] },
+        { country: "Greece", capital: "Athens", continent: "Europe", currency: "Euro", feature: "The Acropolis", borders: ["Albania", "North Macedonia", "Bulgaria", "Turkey"] },
+        { country: "Indonesia", capital: "Jakarta", continent: "Asia", currency: "Rupiah", feature: "Mount Krakatoa", borders: ["Malaysia", "Papua New Guinea", "East Timor"] }
+    ];
+
+    // Expanded and hardened question structures
+    const questionTypes = [
+        {
+            text: (c) => `What is the official capital city of ${c.country}?`,
+            answer: (c) => c.capital,
+            pool: () => countryData.map(c => c.capital)
+        },
+        {
+            text: (c) => `In which global region or continent will you find ${c.country}?`,
+            answer: (c) => c.continent,
+            pool: () => ["Europe", "Asia", "Africa", "North America", "South America", "Oceania", "Asia/Europe"]
+        },
+        {
+            text: (c) => `Which of these nations shares an official land border with ${c.country}?`,
+            answer: (c) => c.borders[0], 
+            pool: () => countryData.map(c => c.country),
+            condition: (c) => c.borders[0] !== "none (Island nation)"
+        },
+        {
+            text: (c) => `What is the primary official currency used in ${c.country}?`,
+            answer: (c) => c.currency,
+            pool: () => Array.from(new Set(countryData.map(c => c.currency))) // Unique list of currencies
+        },
+        {
+            text: (c) => `Which iconic geographical landmark or point of interest is located in ${c.country}?`,
+            answer: (c) => c.feature,
+            pool: () => countryData.map(c => c.feature)
+        }
+    ];
+
+    let quizPool = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    const totalQuestions = 15; // Increased question size per round for thoroughness
+
+    const questionElement = document.getElementById('question');
+    const hintElement = document.getElementById('hint');
+    const optionsContainer = document.getElementById('options');
+    const nextButton = document.getElementById('next-button');
+    const scoreElement = document.getElementById('score');
+    const progressElement = document.getElementById('progress');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultsScreen = document.getElementById('results-screen');
+    const finalScoreElement = document.getElementById('final-score');
+    const feedbackElement = document.getElementById('feedback-message');
+
+    function initGame() {
+        quizPool = [];
+        
+        // Deep clone data and shuffle to maximize procedural variation
+        let countryPool = [...countryData].sort(() => 0.5 - Math.random());
+        
+        while (quizPool.length < totalQuestions) {
+            const randomCountry = countryPool[Math.floor(Math.random() * countryPool.length)];
+            const randomType = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+            
+            if (randomType.condition && !randomType.condition(randomCountry)) continue;
+
+            const questionText = randomType.text(randomCountry);
+            const correctAnswer = randomType.answer(randomCountry);
+            
+            // Avoid duplicate question prompts
+            if (quizPool.some(q => q.question === questionText)) continue;
+
+            // Isolate choices to prevent overlaps
+            let wrongOptionsPool = randomType.pool().filter(ans => ans !== correctAnswer && ans !== randomCountry.country);
+            wrongOptionsPool.sort(() => 0.5 - Math.random());
+            
+            let options = [correctAnswer, ...wrongOptionsPool.slice(0, 3)];
+            options.sort(() => 0.5 - Math.random());
+
+            // Build an educational learning hint
+            let hint = `📚 <strong>Did you know?</strong> ${randomCountry.country} (${randomCountry.continent}) is famous for <em>${randomCountry.feature}</em>. Its capital city is ${randomCountry.capital} and they use the ${randomCountry.currency}.`;
+
+            quizPool.push({
+                question: questionText,
+                correct: correctAnswer,
+                options: options,
+                hint: hint
+            });
+        }
+
+        currentQuestionIndex = 0;
+        score = 0;
+        scoreElement.textContent = score;
+        
+        quizScreen.classList.remove('hide');
+        resultsScreen.classList.add('hide');
+        
+        showQuestion();
+    }
+
+    function showQuestion() {
+        nextButton.classList.add('hide');
+        optionsContainer.innerHTML = '';
+        
+        const currentQuestion = quizPool[currentQuestionIndex];
+        
+        document.getElementById('question-title').textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
+        questionElement.textContent = currentQuestion.question;
+        
+        // Context hint remains visible so the user actively reads details about the country while deciding
+        hintElement.innerHTML = currentQuestion.hint;
+        
+        progressElement.style.width = `${(currentQuestionIndex / totalQuestions) * 100}%`;
+
+        currentQuestion.options.forEach(option => {
+            const button = document.createElement('button');
+            button.textContent = option;
+            button.classList.add('btn');
+            button.addEventListener('click', () => selectOption(button, currentQuestion.correct));
+            optionsContainer.appendChild(button);
+        });
+    }
+
+    function selectOption(selectedButton, correctAnswer) {
+        const buttons = optionsContainer.querySelectorAll('.btn');
+        buttons.forEach(btn => btn.disabled = true);
+
+        if (selectedButton.textContent === correctAnswer) {
+            selectedButton.classList.add('correct');
+            score++;
+            scoreElement.textContent = score;
+        } else {
+            selectedButton.classList.add('wrong');
+            buttons.forEach(btn => {
+                if (btn.textContent === correctAnswer) {
+                    btn.classList.add('correct');
+                }
+            });
+        }
+
+        nextButton.classList.remove('hide');
+    }
+
+    nextButton.addEventListener('click', () => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < totalQuestions) {
+            showQuestion();
+        } else {
+            showResults();
+        }
+    });
+
+    function showResults() {
+        quizScreen.classList.add('hide');
+        resultsScreen.classList.remove('hide');
+        finalScoreElement.textContent = `${score} / ${totalQuestions}`;
+        
+        const percentage = (score / totalQuestions) * 100;
+
+        if (percentage === 100) {
+            feedbackElement.textContent = "Spectacular! Master-level geographical awareness.";
+            feedbackElement.style.color = "var(--success)";
+        } else if (percentage >= 80) {
+            feedbackElement.textContent = "Excellent work! You have strong global literacy.";
+            feedbackElement.style.color = "var(--success)";
+        } else if (percentage >= 50) {
+            feedbackElement.textContent = "Decent effort. Look closely at the context clues to master the facts.";
+            feedbackElement.style.color = "#b45309";
+        } else {
+            feedbackElement.textContent = "A great learning opportunity. Try another round to discover more!";
+            feedbackElement.style.color = "var(--error)";
+        }
+    }
+
+    function resetGame() {
+        initGame();
+    }
+
+    window.onload = initGame;
+</script>
+
+</body>
+</html>

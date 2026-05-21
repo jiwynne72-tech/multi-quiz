@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Capital & Geography Quiz</title>
+    <style>
+        :root {
+            --primary: #2b5797;
+            --success: #00a300;
+            --error: #b91d47;
+            --dark: #1e1e1e;
+            --light: #f4f4f6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .stats {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: var(--light);
+            border-radius: 3px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-box {
+            margin-bottom: 25px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .hint-text {
+            font-size: 0.95rem;
+            color: #666;
+            font-style: italic;
+            background: #f9f9f9;
+            padding: 10px;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .btn {
+            background-color: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: var(--light);
+            border-color: #bbb;
+        }
+
+        .btn.correct {
+            background-color: #d4edda;
+            border-color: var(--success);
+            color: #155724;
+            font-weight: bold;
+        }
+
+        .btn.wrong {
+            background-color: #f8d7da;
+            border-color: var(--error);
+            color: #721c24;
+        }
+
+        .next-btn {
+            display: block;
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .next-btn:hover {
+            background-color: #1e3f7a;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .results-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <!-- Quiz Interface -->
+    <div id="quiz-screen">
+        <header>
+            <h1 id="question-title">Geography Quiz</h1>
+            <div class="stats">Score: <span id="score">0</span></div>
+        </header>
+        
+        <div class="progress-bar">
+            <div id="progress" class="progress"></div>
+        </div>
+
+        <div class="question-box">
+            <div id="question" class="question-text">Loading question...</div>
+            <div id="hint" class="hint-text"></div>
+        </div>
+
+        <div id="options" class="options-grid">
+            <!-- Buttons dynamically inserted here -->
+        </div>
+
+        <button id="next-button" class="next-btn hide">Next Question</button>
+    </div>
+
+    <!-- End Screen -->
+    <div id="results-screen" class="results-screen hide">
+        <h2>Quiz Completed!</h2>
+        <p>Your final score is:</p>
+        <div id="final-score" class="score-display">0/10</div>
+        <p id="feedback-message"></p>
+        <button onclick="resetGame()" class="next-btn">Play Again</button>
+    </div>
+</div>
+
+<script>
+    // Global database featuring various types of facts per country
+    const countryData = [
+        { country: "France", capital: "Paris", continent: "Europe", borders: ["Spain", "Germany", "Belgium", "Italy", "Switzerland", "Luxembourg"] },
+        { country: "Japan", capital: "Tokyo", continent: "Asia", borders: ["none (Island nation)"] },
+        { country: "Brazil", capital: "Brasília", continent: "South America", borders: ["Argentina", "Colombia", "Peru", "Venezuela", "Uruguay", "Paraguay", "Bolivia", "Guyana", "Suriname", "French Guiana"] },
+        { country: "Egypt", capital: "Cairo", continent: "Africa", borders: ["Libya", "Sudan", "Israel", "Gaza Strip"] },
+        { country: "Australia", capital: "Canberra", continent: "Oceania", borders: ["none (Island nation)"] },
+        { country: "Canada", capital: "Ottawa", continent: "North America", borders: ["United States"] },
+        { country: "India", capital: "New Delhi", continent: "Asia", borders: ["Pakistan", "China", "Nepal", "Bhutan", "Bangladesh", "Myanmar"] },
+        { country: "South Africa", capital: "Pretoria", continent: "Africa", borders: ["Namibia", "Botswana", "Zimbabwe", "Mozambique", "Eswatini", "Lesotho"] },
+        { country: "Germany", capital: "Berlin", continent: "Europe", borders: ["France", "Austria", "Switzerland", "Poland", "Czechia", "Denmark", "Netherlands", "Belgium", "Luxembourg"] },
+        { country: "Argentina", capital: "Buenos Aires", continent: "South America", borders: ["Chile", "Bolivia", "Paraguay", "Brazil", "Uruguay"] },
+        { country: "Mexico", capital: "Mexico City", continent: "North America", borders: ["United States", "Guatemala", "Belize"] },
+        { country: "Italy", capital: "Rome", continent: "Europe", borders: ["France", "Switzerland", "Austria", "Slovenia", "San Marino", "Vatican City"] },
+        { country: "Kenya", capital: "Nairobi", continent: "Africa", borders: ["Ethiopia", "Somalia", "Tanzania", "Uganda", "South Sudan"] },
+        { country: "Thailand", capital: "Bangkok", continent: "Asia", borders: ["Myanmar", "Laos", "Cambodia", "Malaysia"] }
+    ];
+
+    // Types of questions we can generate dynamically
+    const questionTypes = [
+        {
+            text: (c) => `What is the capital city of ${c.country}?`,
+            answer: (c) => c.capital,
+            pool: () => countryData.map(c => c.capital)
+        },
+        {
+            text: (c) => `In which continent is ${c.country} located?`,
+            answer: (c) => c.continent,
+            pool: () => ["Europe", "Asia", "Africa", "North America", "South America", "Oceania"]
+        },
+        {
+            text: (c) => `Which of these countries shares a land border with ${c.country}?`,
+            answer: (c) => c.borders[0], // Uses the first listed border as the correct option
+            pool: () => countryData.map(c => c.country),
+            condition: (c) => c.borders[0] !== "none (Island nation)"
+        }
+    ];
+
+    let quizPool = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    const totalQuestions = 10; // Number of questions per round
+
+    const questionElement = document.getElementById('question');
+    const hintElement = document.getElementById('hint');
+    const optionsContainer = document.getElementById('options');
+    const nextButton = document.getElementById('next-button');
+    const scoreElement = document.getElementById('score');
+    const progressElement = document.getElementById('progress');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultsScreen = document.getElementById('results-screen');
+    const finalScoreElement = document.getElementById('final-score');
+    const feedbackElement = document.getElementById('feedback-message');
+
+    function initGame() {
+        quizPool = [];
+        
+        // Generate random question setups from our data structure
+        while (quizPool.length < totalQuestions) {
+            const randomCountry = countryData[Math.floor(Math.random() * countryData.length)];
+            const randomType = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+            
+            // Skip if question type criteria isn't met (e.g., border questions for island nations)
+            if (randomType.condition && !randomType.condition(randomCountry)) continue;
+
+            const questionText = randomType.text(randomCountry);
+            const correctAnswer = randomType.answer(randomCountry);
+            
+            // Avoid adding identical questions in the same run
+            if (quizPool.some(q => q.question === questionText)) continue;
+
+            // Generate wrong options
+            let wrongOptionsPool = randomType.pool().filter(ans => ans !== correctAnswer && ans !== randomCountry.country);
+            // Shuffle and pick 3 wrong options
+            wrongOptionsPool.sort(() => 0.5 - Math.random());
+            let options = [correctAnswer, ...wrongOptionsPool.slice(0, 3)];
+            // Shuffle final options array
+            options.sort(() => 0.5 - Math.random());
+
+            // Compile additional context as hints
+            let hint = `${randomCountry.country} is located in ${randomCountry.continent}.`;
+            if (randomType.answer(randomCountry) !== randomCountry.capital) {
+                hint += ` Its capital is ${randomCountry.capital}.`;
+            }
+
+            quizPool.push({
+                question: questionText,
+                correct: correctAnswer,
+                options: options,
+                hint: hint
+            });
+        }
+
+        currentQuestionIndex = 0;
+        score = 0;
+        scoreElement.textContent = score;
+        
+        quizScreen.classList.remove('hide');
+        resultsScreen.classList.add('hide');
+        
+        showQuestion();
+    }
+
+    function showQuestion() {
+        nextButton.classList.add('hide');
+        optionsContainer.innerHTML = '';
+        
+        const currentQuestion = quizPool[currentQuestionIndex];
+        
+        // Update header details
+        document.getElementById('question-title').textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
+        questionElement.textContent = currentQuestion.question;
+        hintElement.textContent = `Context: ${currentQuestion.hint}`;
+        
+        // Update progress bar
+        progressElement.style.width = `${(currentQuestionIndex / totalQuestions) * 100}%`;
+
+        // Create choice buttons
+        currentQuestion.options.forEach(option => {
+            const button = document.createElement('button');
+            button.textContent = option;
+            button.classList.add('btn');
+            button.addEventListener('click', () => selectOption(button, currentQuestion.correct));
+            optionsContainer.appendChild(button);
+        });
+    }
+
+    function selectOption(selectedButton, correctAnswer) {
+        const buttons = optionsContainer.querySelectorAll('.btn');
+        buttons.forEach(btn => btn.disabled = true); // Disable further clicking
+
+        if (selectedButton.textContent === correctAnswer) {
+            selectedButton.classList.add('correct');
+            score++;
+            scoreElement.textContent = score;
+        } else {
+            selectedButton.classList.add('wrong');
+            // Highlight correct answer for learning purposes
+            buttons.forEach(btn => {
+                if (btn.textContent === correctAnswer) {
+                    btn.classList.add('correct');
+                }
+            });
+        }
+
+        nextButton.classList.remove('hide');
+    }
+
+    nextButton.addEventListener('click', () => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < totalQuestions) {
+            showQuestion();
+        } else {
+            showResults();
+        }
+    });
+
+    function showResults() {
+        quizScreen.classList.add('hide');
+        resultsScreen.classList.remove('hide');
+        finalScoreElement.textContent = `${score} / ${totalQuestions}`;
+        
+        if (score === totalQuestions) {
+            feedbackElement.textContent = "Flawless! You really know your global geography.";
+        } else if (score >= 7) {
+            feedbackElement.textContent = "Great job! Strong geographic knowledge.";
+        } else if (score >= 4) {
+            feedbackElement.textContent = "Not bad, but there's more of the world to explore!";
+        } else {
+            feedbackElement.textContent = "Keep practicing! The world is a big place.";
+        }
+    }
+
+    function resetGame() {
+        initGame();
+    }
+
+    // Start on load
+    window.onload = initGame;
+</script>
+
+</body>
+</html>

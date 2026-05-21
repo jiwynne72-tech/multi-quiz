@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shakespeare Characters Quiz</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: #1a202c;
+            line-height: 1.5;
+            margin: 0;
+            padding: 15px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        h1 {
+            font-size: 20px;
+            color: #2d3748;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+        .progress-bar {
+            text-align: center;
+            color: #4a5568;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            background: #edf2f7;
+            padding: 6px;
+            border-radius: 20px;
+        }
+        .question-block {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .question-text {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 12px;
+            color: #2d3748;
+        }
+        .option-label {
+            display: block;
+            background: #f7fafc;
+            border: 1px solid #edf2f7;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .option-label:hover {
+            background: #edf2f7;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.1);
+        }
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            background: #f7fafc;
+            border-left: 4px solid #4a5568;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .explanation h4 {
+            margin: 0 0 6px 0;
+            color: #2d3748;
+        }
+        .explanation ul {
+            margin: 0;
+            padding-left: 15px;
+        }
+        .explanation li {
+            margin-bottom: 6px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(49,130,206,0.2);
+        }
+        button:active {
+            background: #2b6cb0;
+        }
+        .score-summary {
+            text-align: center;
+            background: #ebf8ff;
+            border: 1px solid #bee3f8;
+            color: #2b6cb0;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Shakespearean Characters Quiz</h1>
+    <div id="progress" class="progress-bar">Loading...</div>
+    <div id="score-banner" style="display:none;"></div>
+    
+    <form id="quiz-form"></form>
+    <button type="button" id="action-btn" onclick="handleButtonClick()">Submit Answers</button>
+</div>
+
+<script>
+    const pool = [
+    {
+      "question": "In 'Othello', why does Iago continuously invent new, shifting motives for his hatred of Othello?",
+      "options": [
+        { "text": "He is structurally inconsistent as an antagonist.", "rationale": "This view ignores Shakespeare's deliberate psychological portrait of a naturally malicious individual.", "isCorrect": false },
+        { "text": "He exhibits 'motive-hunting' to justify an inherent malice.", "rationale": "Iago actively searches for plausible rationales to justify his foundational desire to destroy goodness.", "isCorrect": true },
+        { "text": "He is driven by genuine, righteous military reform.", "rationale": "His destructive actions entirely contradict any noble desire for professional organizational reform.", "isCorrect": false },
+        { "text": "He is a helpless puppet controlled by external witches.", "rationale": "The play firmly grounds his manipulative actions in human psychology and personal agency.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'Hamlet', what stops King Claudius from achieving genuine spiritual peace when praying?",
+      "options": [
+        { "text": "He forgets the wording of traditional prayers.", "rationale": "His obstacle is deeply theological and moral, not a lack of memory regarding religious ritual.", "isCorrect": false },
+        { "text": "He intends to abdicate the throne immediately.", "rationale": "His subsequent plots to murder Hamlet prove he has no intention of giving up his power.", "isCorrect": false },
+        { "text": "He cannot repent while retaining the fruits of his sin.", "rationale": "Claudius recognizes that true forgiveness requires surrendering the crown and queen he won through murder.", "isCorrect": true },
+        { "text": "He does not believe in heaven or hell.", "rationale": "His intense anxiety stems precisely from his profound belief in an uncorruptible divine justice.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What does Lady Macbeth's sleepwalking trajectory imply about her psychological transformation?",
+      "options": [
+        { "text": "The suppression of her conscience ultimately fractured her sanity.", "rationale": "Forcing herself to override her natural empathy created an unsustainable psychological toll that broke her.", "isCorrect": true },
+        { "text": "She was entirely faking her initial ruthlessness.", "rationale": "Her early, aggressive manipulation of Macbeth altered the course of history, proving her ruthlessness was functional.", "isCorrect": false },
+        { "text": "She suffered from an unrelated medical brain condition.", "rationale": "The text explicitly links her sleepwalking to the inescapable moral guilt of murder.", "isCorrect": false },
+        { "text": "She became permanently comfortable with evil actions.", "rationale": "Her severe somnambulism and eventual suicide prove her mind rejected the evil she committed.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "How does Shylock weaponize the 'Hath not a Jew eyes?' speech at its conclusion?",
+      "options": [
+        { "text": "He demands peaceful assimilation into Venice.", "rationale": "He does not seek integration; he explicitly promises retributive violence.", "isCorrect": false },
+        { "text": "He uses shared humanity to justify reciprocal vengeance.", "rationale": "He argues that if Jews match Christians in pain, they will match them in revenge.", "isCorrect": true },
+        { "text": "He defends the morality of charging interest.", "rationale": "While he discusses business elsewhere, this speech focuses strictly on biological equality and retribution.", "isCorrect": false },
+        { "text": "He begs for legal mercy from the court.", "rationale": "The speech is an aggressive warning of retaliation, not an appeal for pity.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What is the primary dramatic function of the Fool in 'King Lear'?",
+      "options": [
+        { "text": "To flatter Lear and preserve his own safety.", "rationale": "The Fool routinely risks punishment by highlighting the king's extreme political errors.", "isCorrect": false },
+        { "text": "To serve as Lear's externalized, truth-telling conscience.", "rationale": "Using protected status, the Fool forces Lear to see the madness of giving up his power.", "isCorrect": true },
+        { "text": "To provide lighthearted, distraction-based physical slapstick.", "rationale": "His commentary is biting, philosophical, and serves to deepen the play's tragic weight.", "isCorrect": false },
+        { "text": "To secretly organize a peasant rebellion.", "rationale": "The Fool possesses zero political ambitions or administrative agency within the narrative.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'The Tempest', what does Caliban's defiance reveal about Prospero?",
+      "options": [
+        { "text": "Prospero's identity as a harsh, authoritarian colonizer.", "rationale": "Caliban's anger exposes how Prospero seized native land and enslaved its original inhabitant.", "isCorrect": true },
+        { "text": "Prospero's total lack of magical authority.", "rationale": "Prospero controls the island through powerful magic, which Caliban explicitly fears and respects.", "isCorrect": false },
+        { "text": "Prospero's desire to abandon Western civilization.", "rationale": "Prospero focuses intensely on reclaiming his lost political title in Milan, not staying isolated.", "isCorrect": false },
+        { "text": "Prospero's complete and equal fairness to all.", "rationale": "Prospero treats Ariel with affectionate promises but subjugates Caliban with threats of physical torture.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What core flaw ruins Brutus's noble intentions in 'Julius Caesar'?",
+      "options": [
+        { "text": "Cowardice on the field of battle.", "rationale": "Brutus fights bravely at Philippi and actively executes the assassination of Caesar.", "isCorrect": false },
+        { "text": "A secret plot to become absolute king.", "rationale": "The narrative confirms Brutus alone acted entirely for the common good of the Republic.", "isCorrect": false },
+        { "text": "Naively projecting his rigid morality onto others.", "rationale": "He falsely assumes the public prefers abstract freedom and that Mark Antony will act honorably.", "isCorrect": true },
+        { "text": "An obsession with astrology and omens.", "rationale": "As a Stoic, Brutus consciously tries to suppress superstitions rather than rely on them.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What thematic function does Malvolio's harsh punishment serve in 'Twelfth Night'?",
+      "options": [
+        { "text": "It warns against joyless puritanism and self-love.", "rationale": "His containment checks his anti-festive ego, though the cruelty leaves a bitter aftertaste.", "isCorrect": true },
+        { "text": "It proves Shakespeare hated theater artists.", "rationale": "Malvolio despises performance; Shakespeare defends performance by mocking Malvolio.", "isCorrect": false },
+        { "text": "It serves as a model for healthy romance.", "rationale": "Malvolio's obsession with Olivia is driven by status and power, not genuine affection.", "isCorrect": false },
+        { "text": "It has no impact on the final tone.", "rationale": "His angry vow of revenge dampens the tidy, festive ending of the play's main couples.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'Henry IV, Part 1', why does Prince Hal associate with Falstaff?",
+      "options": [
+        { "text": "He wants to escape royal responsibility forever.", "rationale": "Hal states clearly in soliloquy that his tavern life is a temporary, calculated performance.", "isCorrect": false },
+        { "text": "To lower expectations and make his reform look miraculous.", "rationale": "He intends to use his bad reputation to amplify the political impact of his eventual transformation.", "isCorrect": true },
+        { "text": "To build an army of common criminals.", "rationale": "Hal seeks legitimate sovereign authority, not a rebellion backed by tavern thieves.", "isCorrect": false },
+        { "text": "He is completely controlled by Falstaff.", "rationale": "Hal maintains sharp emotional distance, eventually banishing Falstaff upon becoming king.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What philosophy underpins Jaques's 'Seven Ages of Man' speech in 'As You Like It'?",
+      "options": [
+        { "text": "Life is a meaningful, spiritually ascending journey.", "rationale": "Jaques ignores spirituality, portraying human life as a series of superficial, routine roles.", "isCorrect": false },
+        { "text": "Human existence is performative, cyclical, and ultimately empty.", "rationale": "His cynical perspective reduces human dignity to a theatrical illusion ending in total decay.", "isCorrect": true },
+        { "text": "Theater is the finest profession in society.", "rationale": "He uses the stage purely as a critical metaphor for human hypocrisy, not as career praise.", "isCorrect": false },
+        { "text": "Political power is the only true pursuit.", "rationale": "The speech is a detached, philosophical meditation on universal aging rather than state politics.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'Hamlet', why does Ophelia's descent into madness break from Hamlet's version of madness?",
+      "options": [
+        { "text": "Her madness is a strategic, political calculation.", "rationale": "Unlike Hamlet's antic disposition, Ophelia possesses zero political power or subversive intent.", "isCorrect": false },
+        { "text": "Her breakdown is a genuine, helpless response to trauma.", "rationale": "Her state reflects real psychological fracture caused by her father's death and Hamlet's abuse.", "isCorrect": true },
+        { "text": "She is pretending in order to escape Denmark safely.", "rationale": "Her tragic death by drowning confirms she had lost touch with self-preservation entirely.", "isCorrect": false },
+        { "text": "She is possessed by old family ghosts.", "rationale": "Her madness is explicitly tied to human grief and isolation, not supernatural elements.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What does Tybalt's extreme hostility reveal about the feud in 'Romeo and Juliet'?",
+      "options": [
+        { "text": "The feud is driven by deeply logical grievances.", "rationale": "The exact origins are never detailed, emphasizing the irrational nature of the violence.", "isCorrect": false },
+        { "text": "He wants to overthrow the Prince of Verona.", "rationale": "Tybalt is fixated entirely on tribal family pride, not institutional political revolution.", "isCorrect": false },
+        { "text": "The conflict is sustained by conditioned, unreflective hatred.", "rationale": "Tybalt embodies how younger generations inherit and perpetuate violence without questioning why.", "isCorrect": true },
+        { "text": "He is secretly working to help the Montagues.", "rationale": "His immediate, lethal attack on Mercutio confirms his absolute, literal hatred for the opposite house.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'King Lear', what drives Edmund's villainy in his opening soliloquy?",
+      "options": [
+        { "text": "A total lack of personal ambition.", "rationale": "Edmund is hyper-ambitious, explicitly plotting to seize lands belonging to his legitimate brother.", "isCorrect": false },
+        { "text": "Resentment toward societal stigma against his illegitimacy.", "rationale": "Edmund rejects nature-based social hierarchies that strip him of rights due to his birth status.", "isCorrect": true },
+        { "text": "Direct instructions from the French king.", "rationale": "Edmund acts purely out of self-interest and domestic ambition, not foreign collusion.", "isCorrect": false },
+        { "text": "A deep loyalty to his father, Gloucester.", "rationale": "He actively betrays his father to Cornwall, leading directly to Gloucester's blinding.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What motivates Cordelia's refusal to flatter Lear in Act 1, Scene 1?",
+      "options": [
+        { "text": "A stubborn desire to see her father fail.", "rationale": "Her later return with an army to rescue Lear disproves any malicious intent.", "isCorrect": false },
+        { "text": "A commitment to linguistic integrity and true affection.", "rationale": "She refuses to cheapen genuine love by turning it into a transactional, competitive speech.", "isCorrect": true },
+        { "text": "A secret plot with her sisters to divide Rome.", "rationale": "She is horrified by her sisters' falsehoods and is banished as a direct consequence.", "isCorrect": false },
+        { "text": "Fear of public speaking in front of the court.", "rationale": "Cordelia speaks firmly and clearly to both her father and her suitors during the scene.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'Macbeth', what does Banquo's response to the Witches reveal about his character?",
+      "options": [
+        { "text": "He is easily manipulated by dark prophecies.", "rationale": "Banquo remains highly skeptical, warning that evil forces use truths to betray humans.", "isCorrect": false },
+        { "text": "He lacks any personal desires or ambition.", "rationale": "He asks to hear his own future, showing interest, but refuses to act dishonorably to achieve it.", "isCorrect": false },
+        { "text": "He possesses moral restraint and philosophical skepticism.", "rationale": "Unlike Macbeth, Banquo refuses to let ambition override his conscience or dictate his actions.", "isCorrect": true },
+        { "text": "He plans to murder Duncan before Macbeth can.", "rationale": "Banquo remains steadfastly loyal to the crown, which makes him a target for Macbeth.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'The Merchant of Venice', what does Portia's 'mercy' speech reveal during the trial?",
+      "options": [
+        { "text": "Her absolute dedication to treating Shylock fairly.", "rationale": "While she speaks beautifully of mercy, she ultimately enforces a brutal legal trap on Shylock.", "isCorrect": false },
+        { "text": "A rhetorical appeal that highlights Christian legal hypocrisy.", "rationale": "The Venetian court demands mercy from Shylock but shows him zero mercy regarding his faith and assets.", "isCorrect": true },
+        { "text": "Her lack of formal legal training.", "rationale": "She displays brilliant, precise mastery of Venetian statutes to defeat Shylock's bond.", "isCorrect": false },
+        { "text": "A desire to see the laws of Venice destroyed.", "rationale": "She upholds the absolute authority of the law, using it as a weapon to protect Antonio.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What does Mercutio's 'Queen Mab' speech suggest about his worldview?",
+      "options": [
+        { "text": "He is a romantic who believes in true love.", "rationale": "He routinely mocks Romeo's romantic ideals, viewing love as purely physical and absurd.", "isCorrect": false },
+        { "text": "He is deeply terrified of actual fairies.", "rationale": "The speech is an ironic performance, not a expression of literal supernatural terror.", "isCorrect": false },
+        { "text": "Human desires and dreams are fundamentally deceptive illusions.", "rationale": "He spins a fantasy that degenerates into violence, showing that dreams reflect our base appetites.", "isCorrect": true },
+        { "text": "He wants to become a professional writer.", "rationale": "Mercutio is a soldier and court wit; his speech serves a immediate dramatic, conversational function.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'Much Ado About Nothing', why do Beatrice and Benedick use a 'merry war' of wit?",
+      "options": [
+        { "text": "They genuinely loathe each other's presence.", "rationale": "Their constant focus on each other reveals a deep, mutual obsession masked as hostility.", "isCorrect": false },
+        { "text": "To mask vulnerability and fear of romantic rejection.", "rationale": "Biting humor serves as a protective psychological shield against emotional intimacy.", "isCorrect": true },
+        { "text": "They are competing for a literal royal prize.", "rationale": "Their contest is purely verbal and social, independent of any official rewards.", "isCorrect": false },
+        { "text": "They are practicing for a legal career.", "rationale": "Their targets are strictly personal and romantic, not professional or judicial.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What makes Richard III an appealing character despite his extreme villainy?",
+      "options": [
+        { "text": "His deeply hidden moral goodness.", "rationale": "Richard shows no remorse until his final nightmare, committing ruthless murders throughout the play.", "isCorrect": false },
+        { "text": "His charismatic, theatrical complicity with the audience.", "rationale": "By sharing his plots via direct soliloquies, he invites the audience to admire his wicked intellect.", "isCorrect": true },
+        { "text": "His total lack of physical courage.", "rationale": "Richard fights with terrifying fury at Bosworth Field, refusing to flee despite losing his horse.", "isCorrect": false },
+        { "text": "His commitment to traditional family values.", "rationale": "He murders his brother, his nephews, and his wife, obliterating family ties for power.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'The Winter's Tale', what distinguishes Leontes's jealousy from Othello's?",
+      "options": [
+        { "text": "It is entirely manufactured by a external villain.", "rationale": "Unlike Othello who has Iago, Leontes develops his delusion entirely from within his own mind.", "isCorrect": true },
+        { "text": "It is based on clear, factual physical evidence.", "rationale": "Hermione is entirely innocent; Leontes misinterprets basic courtesy as a sexual affair.", "isCorrect": false },
+        { "text": "It disappears immediately after one warning.", "rationale": "He rejects the official oracle of Apollo, relenting only after his son dies and his wife collapses.", "isCorrect": false },
+        { "text": "It is justified by Hermione's confession.", "rationale": "Hermione robustly defends her honor in a open courtroom, never confessing to any crime.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What does Caliban's 'Be not afeard, the isle is full of noises' speech reveal?",
+      "options": [
+        { "text": "His capacity for deep poetic appreciation and sensitivity.", "rationale": "The speech breaks his brutish stereotype, showing a profound spiritual connection to the island.", "isCorrect": true },
+        { "text": "His plan to build a secret musical instrument.", "rationale": "He is describing natural and magical phenomena, not physical engineering projects.", "isCorrect": false },
+        { "text": "His total surrender to Prospero's ultimate rule.", "rationale": "He delivers this to Stephano to encourage a violent coup against Prospero.", "isCorrect": false },
+        { "text": "His absolute loss of sanity and mind.", "rationale": "The language is highly organized, lucid, and represents the most beautiful poetry in the play.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'Measure for Measure', what irony defines Angelo's puritanical rule?",
+      "options": [
+        { "text": "He tries to legalise all forms of vice.", "rationale": "He actively enforces the death penalty for vices he considers sinful.", "isCorrect": false },
+        { "text": "He succumbs to the exact sins he punishes.", "rationale": "He sentences Claudio to death for premarital sex while demanding sex from Isabella as a bribe.", "isCorrect": true },
+        { "text": "He turns out to be Duke Vincentio in a mask.", "rationale": "Angelo is a distinct individual; the Duke disguises himself as a friar to spy on Angelo.", "isCorrect": false },
+        { "text": "He is completely illiterate and cannot read laws.", "rationale": "Angelo is a highly educated, precise judge who knows the statutes inside and out.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What motivates Mark Antony's funeral oration in 'Julius Caesar'?",
+      "options": [
+        { "text": "A subversion of Brutus's rules to incite a riot.", "rationale": "He follows the letter of Brutus's law while using irony to inflame the mob against the conspirators.", "isCorrect": true },
+        { "text": "A genuine desire to establish peace with Cassius.", "rationale": "Antony plans to hunt down and kill the conspirators, unleashing a civil war.", "isCorrect": false },
+        { "text": "An honest defense of the concept of a Republic.", "rationale": "Antony seeks personal monarchical control alongside Octavius, disregarding republican ideals.", "isCorrect": false },
+        { "text": "Total fear for his own physical safety.", "rationale": "Antony's speech is an aggressive, calculated offensive gamble, not a defensive retreat.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'Macbeth', how do the three Witches interact with Macbeth's agency?",
+      "options": [
+        { "text": "He force him physically to commit murder.", "rationale": "They offer predictions; the decision to murder Duncan rests entirely on Macbeth's choices.", "isCorrect": false },
+        { "text": "They act as psychological mirrors to his ambition.", "rationale": "They vocalize thoughts of kingship that Macbeth was already internalizing and desiring.", "isCorrect": true },
+        { "text": "They protect him from any negative consequences.", "rationale": "Their misleading prophecies intentionally lead him toward false security and destruction.", "isCorrect": false },
+        { "text": "They are products of his visual hallucinations.", "rationale": "Banquo sees them too, proving they are objective realities within the play's universe.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What does Goneril and Regan's treatment of Lear reveal about power?",
+      "options": [
+        { "text": "Power is naturally respectful of old age.", "rationale": "They instantly strip their elderly father of his knights and personal dignity once they gain land.", "isCorrect": false },
+        { "text": "Political authority is purely transactional and cold.", "rationale": "Once the physical crown is transferred, emotional filial loyalty disappears in favor of raw utility.", "isCorrect": true },
+        { "text": "They are terrified of Lear's magical spells.", "rationale": "Lear has no magic; he is a powerless old man, which they fully understand and exploit.", "isCorrect": false },
+        { "text": "They are acting under direct orders from France.", "rationale": "They act purely for individual domestic power, eventually turning violently on each other.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'A Midsummer Night's Dream', what does Puck's attitude toward the lovers reveal?",
+      "options": [
+        { "text": "He finds human emotional drama ridiculous.", "rationale": "He views mortal romantic distress as an entertaining comedy of errors.", "isCorrect": true },
+        { "text": "He wants to marry Hermia himself.", "rationale": "Puck is a non-human sprite with zero interest in mortal marriage or romance.", "isCorrect": false },
+        { "text": "He is deeply committed to traditional marriage values.", "rationale": "He alters affections carelessly with potions, showing a detached view of 'true love'.", "isCorrect": false },
+        { "text": "He hates his master, Oberon.", "rationale": "Though mischievous, Puck operates willingly as Oberon's loyal jester and agent.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What drives Shylock to demand the literal pound of flesh over money?",
+      "options": [
+        { "text": "The flesh can be sold for a massive profit.", "rationale": "A pound of human flesh has zero economic value in Venice, which Shylock openly admits.", "isCorrect": false },
+        { "text": "A symbolic desire to feed his entire family.", "rationale": "His demand is driven by raw, legalistic hatred, not biological survival.", "isCorrect": false },
+        { "text": "Accumulated trauma transformed into a demand for absolute revenge.", "rationale": "Systemic abuse by Antonio makes Shylock prioritize destroying his enemy over financial gain.", "isCorrect": true },
+        { "text": "Direct instructions from Venetian religious leaders.", "rationale": "He acts alone, relying strictly on civil law, against the pleas of community leaders.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'Hamlet', how does Gertrude's character remain ambiguous regarding the murder?",
+      "options": [
+        { "text": "She explicitly confesses to poisoning King Hamlet.", "rationale": "She never admits to any knowledge or execution of the assassination plot.", "isCorrect": false },
+        { "text": "The text leaves her level of complicity unclear.", "rationale": "Shakespeare never defines whether she knew about Claudius's crime before marrying him.", "isCorrect": true },
+        { "text": "She leaves Denmark to escape investigation.", "rationale": "She remains in the castle, dying accidentally from Claudius's poisoned cup.", "isCorrect": false },
+        { "text": "She writes a secret diary exposing Claudius.", "rationale": "No such document or narrative device exists within the construction of the tragedy.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What is the psychological purpose of Cleopatra's shifting moods in 'Antony and Cleopatra'?",
+      "options": [
+        { "text": "She is structurally a poorly written character.", "rationale": "Her volatile nature is a deliberate, brilliant representation of calculation and charisma.", "isCorrect": false },
+        { "text": "To maintain absolute emotional control over Antony.", "rationale": "By remaining unpredictable, she ensures Antony remains perpetually obsessed and dependent.", "isCorrect": true },
+        { "text": "She is suffering from an active physical poison.", "rationale": "She uses poison only at the very end to commit suicide, not during her court performances.", "isCorrect": false },
+        { "text": "She is trying to mimic Roman military stoicism.", "rationale": "She deliberately defines herself against cold, rigid Roman values through Eastern luxury and passion.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'Twelfth Night', what does Viola's disguise as Cesario allow her to do?",
+      "options": [
+        { "text": "Speak with absolute freedom regarding gender and desire.", "rationale": "As a young man, she can challenge Orsino's views on love while expressing her own hidden grief.", "isCorrect": true },
+        { "text": "Seize the political throne of Illyria.", "rationale": "Viola has zero political ambitions, seeking only survival and employment after a shipwreck.", "isCorrect": false },
+        { "text": "Practice her formal skills as a military knight.", "rationale": "She is terrified of physical violence, as shown during her comic duel with Sir Andrew.", "isCorrect": false },
+        { "text": "Expose Olivia as a dangerous criminal spy.", "rationale": "Olivia is a noblewoman mourning her brother, not a state threat or criminal.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What does Coriolanus's contempt for the common plebeians reveal about his character?",
+      "options": [
+        { "text": "He wants to establish a modern democracy.", "rationale": "He loathes democratic processes, viewing the masses as unstable and entirely unfit to govern.", "isCorrect": false },
+        { "text": "An uncompromising, elitist pride that rejects political compromise.", "rationale": "He is a pure soldier who refuses to flatter the public for political votes.", "isCorrect": true },
+        { "text": "He is secretly a coward hiding from battles.", "rationale": "He is an ultra-brave warrior who captures the city of Corioles almost entirely by himself.", "isCorrect": false },
+        { "text": "He is controlled by foreign funding.", "rationale": "His pride is internal and familial, driven by his mother Volumnia, not foreign bribes.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'The Tempest', why does Prospero decide to drown his book and break his staff?",
+      "options": [
+        { "text": "He has run completely out of magic ingredients.", "rationale": "His magic is derived from study and art, not consumables or physical components.", "isCorrect": false },
+        { "text": "He acknowledges that absolute control isolates him from humanity.", "rationale": "To rejoin the human community and forgive his enemies, he must yield his godlike authority.", "isCorrect": true },
+        { "text": "He is defeated by Caliban's superior spells.", "rationale": "Prospero easily defeats Caliban's plot; his abdication of magic is entirely voluntary.", "isCorrect": false },
+        { "text": "He is ordered to do so by the King of Naples.", "rationale": "Prospero holds the King captive with magic; he makes the choice independently to restore order.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What does Mercutio's final curse ('A plague o' both your houses!') signal?",
+      "options": [
+        { "text": "The transition of the play from comedy to tragedy.", "rationale": "His death shatters the comedic wit of Verona, locking the lovers into an inescapable tragic path.", "isCorrect": true },
+        { "text": "His conversion to a new political faction.", "rationale": "He dies rejecting both factions, furious at the senseless feud that cost him his life.", "isCorrect": false },
+        { "text": "His literal belief in biochemical biological warfare.", "rationale": "The line is an idiomatic expression of ultimate frustration, not a literal medical directive.", "isCorrect": false },
+        { "text": "His forgiveness of Tybalt's illegal actions.", "rationale": "He blames both Tybalt's malice and Romeo's interference for his fatal wound.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'Julius Caesar', why does Cassius use forged letters to manipulate Brutus?",
+      "options": [
+        { "text": "Because Brutus cannot read traditional Roman script.", "rationale": "Brutus is a highly literate intellectual; the letters are forged to mimic public opinion, not language.", "isCorrect": false },
+        { "text": "To exploit Brutus's sense of duty to public opinion.", "rationale": "Cassius knows Brutus will act only if he believes the citizens of Rome demand protection from tyranny.", "isCorrect": true },
+        { "text": "To frame Mark Antony for high treason.", "rationale": "The letters focus entirely on urging Brutus to wake up and stop Caesar, not targeting Antony.", "isCorrect": false },
+        { "text": "To steal money from Brutus's private estate.", "rationale": "The goal is entirely political alignment for a assassination, not financial theft.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What does the character of Falstaff represent to Prince Hal?",
+      "options": [
+        { "text": "A rigid model of strict military discipline.", "rationale": "Falstaff is a corrupt, cowardly, and gluttonous knight who actively mocks military honor.", "isCorrect": false },
+        { "text": "An anarchic world of pure appetite free from duty.", "rationale": "Falstaff embodies the holiday spirit of the tavern, which Hal must eventually reject to govern.", "isCorrect": true },
+        { "text": "His actual biological father who raised him.", "rationale": "Hal's father is King Henry IV; Falstaff is a surrogate father figure representing lawlessness.", "isCorrect": false },
+        { "text": "A dangerous political rival for the crown.", "rationale": "Falstaff has zero royal blood or political ambition beyond wanting free access to the treasury.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'Macbeth', why does Macbeth kill Banquo but spare Fleance accidentally?",
+      "options": [
+        { "text": "Fleance escapes due to a chaotic technical mishap.", "rationale": "The hired assassins fumble the light during the ambush, allowing Fleance to run away in the dark.", "isCorrect": true },
+        { "text": "Macbeth secretly ordered Fleance to be spared.", "rationale": "Macbeth explicitly ordered both killed to break the prophecy that Banquo's line would rule.", "isCorrect": false },
+        { "text": "Fleance uses magical invisibility spells.", "rationale": "The scene relies entirely on standard physical action and confusion, not magic.", "isCorrect": false },
+        { "text": "Banquo poisons the assassins beforehand.", "rationale": "Banquo is caught completely off guard while returning to the castle and dies defending his son.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What does Hero's silent forgiveness of Claudio in 'Much Ado' suggest?",
+      "options": [
+        { "text": "She has completely lost the physical power of speech.", "rationale": "She speaks clearly during her unmasking to confirm her identity and innocence.", "isCorrect": false },
+        { "text": "The suppression of female agency within patriarchal marriage structures.", "rationale": "Her quiet return highlights a social order where women are expected to accept public shaming and move on.", "isCorrect": true },
+        { "text": "She was secretly guilty of the allegations.", "rationale": "The entire plot hinge is that Don John completely fabricated the slanderous evidence.", "isCorrect": false },
+        { "text": "She thinks Claudio's accusations were funny.", "rationale": "The public shaming at the altar caused her to faint and simulate death from profound grief.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'King Lear', why does Edgar adopt the disguise of 'Poor Tom'?",
+      "options": [
+        { "text": "To launch an immediate economic socialist revolt.", "rationale": "He flees for basic survival after being falsely accused of treason by his brother Edmund.", "isCorrect": false },
+        { "text": "To completely escape execution by blending into absolute nothingness.", "rationale": "As a mad beggar, he becomes socially invisible, preserving his life in a hostile kingdom.", "isCorrect": true },
+        { "text": "Because he genuinely loses his sanity.", "rationale": "His internal monologues confirm he is entirely sane and playing a calculated role.", "isCorrect": false },
+        { "text": "To practice acting for a local theater troupe.", "rationale": "The stakes are literal life and death; he is being actively hunted by royal guards.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What defines Othello's tragic vulnerability to Iago's lies?",
+      "options": [
+        { "text": "An inherent lack of military intelligence.", "rationale": "Othello is Venice's premier general, respected for his brilliant tactical mind.", "isCorrect": false },
+        { "text": "His status as a racial outsider unfamiliar with Venetian court deceit.", "rationale": "Iago exploits Othello's hidden insecurities about his age, race, and lack of domestic sophistication.", "isCorrect": true },
+        { "text": "A total lack of true love for Desdemona.", "rationale": "Othello loves her intensely; his extreme passion is exactly what Iago warps into murderous jealousy.", "isCorrect": false },
+        { "text": "Literal physical blindness that prevents him from checking facts.", "rationale": "His blindness is strictly psychological, driven by manipulated perception and emotion.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'The Winter's Tale', what does Paulina represent to King Leontes?",
+      "options": [
+        { "text": "An uncompromising moral force and guardian of truth.", "rationale": "Paulina aggressively challenges Leontes's tyranny and preserves Hermione until he repents.", "isCorrect": true },
+        { "text": "A dangerous witch plotting to poison the court.", "rationale": "Leontes calls her a witch in anger, but she operates as the play's ultimate moral anchor.", "isCorrect": false },
+        { "text": "A sycophant who covers up his royal mistakes.", "rationale": "She does the opposite, forcing him to face his guilt daily for sixteen long years.", "isCorrect": false },
+        { "text": "A secret agent working for the King of Bohemia.", "rationale": "Her loyalty belongs strictly to Hermione and the moral restoration of Sicilia.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What does Rosalind's male alias 'Ganymede' allow her to do in 'As You Like It'?",
+      "options": [
+        { "text": "Directly control the Duke's military forces.", "rationale": "She lives as an exile in the forest, completely detached from formal court military units.", "isCorrect": false },
+        { "text": "Test Orlando's romantic affection without societal filters.", "rationale": "Disguised as a man, she can tutor Orlando in love while uncovering his true character.", "isCorrect": true },
+        { "text": "Conceal her ability to read and write.", "rationale": "She actively uses literacy to mock Orlando's poorly written love poems pinned to trees.", "isCorrect": false },
+        { "text": "Flee England to move permanently to France.", "rationale": "She stays in the Forest of Arden, resolving domestic relationships rather than leaving.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'Hamlet', why does Horatio survive the final bloodbath?",
+      "options": [
+        { "text": "He cowers outside the room during the duels.", "rationale": "He is right beside Hamlet, even attempting to drink the remaining poison himself.", "isCorrect": false },
+        { "text": "To serve as the definitive witness who reports Hamlet's story.", "rationale": "Hamlet explicitly commands Horatio to live and explain the chaotic truth to the world.", "isCorrect": true },
+        { "text": "He buys his safety by cooperating with Fortinbras.", "rationale": "Horatio acts out of profound loyalty to Hamlet, not political self-preservation.", "isCorrect": false },
+        { "text": "He possesses supernatural immunity to poisoned swords.", "rationale": "Horatio is a normal human being; he simply avoids being wounded during the fencing match.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What does Gertrude's description of Ophelia's drowning emphasize?",
+      "options": [
+        { "text": "A beautiful, passive, and aestheticized submission to nature.", "rationale": "The speech transforms a horrific suicide into a poetic, floral image, downplaying the violence.", "isCorrect": true },
+        { "text": "A clear, forensic proof of violent murder.", "rationale": "The narrative describes her clothes pulling her down naturally, framing it as an accidental descent from madness.", "isCorrect": false },
+        { "text": "Ophelia's final words cursing the royal family.", "rationale": "Gertrude reports that Ophelia sang old hymns, completely unaware of her immediate danger.", "isCorrect": false },
+        { "text": "A list of hidden suspects who pushed her.", "rationale": "No foul play is mentioned; she fell when a willow branch broke while she hung wreaths.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'Macbeth', why does Macduff leave his family unprotected to flee to England?",
+      "options": [
+        { "text": "He wants them to be captured by Macbeth.", "rationale": "He is devastated by their deaths, showing profound love and grief when he hears the news.", "isCorrect": false },
+        { "text": "He naively misjudges Macbeth's capacity for absolute tyranny.", "rationale": "He did not believe Macbeth would slaughter innocent women and children over a political flight.", "isCorrect": true },
+        { "text": "He is pursuing a romantic affair with an English princess.", "rationale": "His journey is strictly political, designed to convince Malcolm to claim the Scottish throne.", "isCorrect": false },
+        { "text": "He is a literal coward who runs from battles.", "rationale": "Macduff is a fearsome warrior who ultimately confronts and kills Macbeth in single combat.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What makes the character of Joan of Arc ambiguous in 'Henry VI, Part 1'?",
+      "options": [
+        { "text": "She switches sides to support England.", "rationale": "She fights fiercely for France until her capture and execution by the English army.", "isCorrect": false },
+        { "text": "Shakespeare frames her as both an inspired patriot and a witch.", "rationale": "The English perspective portrays her using literal demons, while her French actions look like heroism.", "isCorrect": true },
+        { "text": "She turns out to be a royal English princess.", "rationale": "She is explicitly defined as a shepherd's daughter rising from poverty to lead armies.", "isCorrect": false },
+        { "text": "She never appears on the physical battlefield.", "rationale": "She actively leads troops and duels directly with the future King of England on stage.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'The Merchant of Venice', what does Jessica's theft of her father's ring suggest?",
+      "options": [
+        { "text": "She hates the ring's design and style.", "rationale": "The theft is an act of total rebellion and material escape, not an aesthetic evaluation.", "isCorrect": false },
+        { "text": "A painful emotional wound to Shylock beyond mere money.", "rationale": "The ring was given by his late wife Leah; trading it for a monkey hurts Shylock's humanity.", "isCorrect": true },
+        { "text": "She is trying to fund a new synagogue.", "rationale": "She converts to Christianity and spends the money recklessly on a secular elopement.", "isCorrect": false },
+        { "text": "The ring holds magical powers of invisibility.", "rationale": "The play treats the ring as a standard, deeply personal domestic item with no magical elements.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What is the psychological driver for Prospero's ultimate forgiveness of Antonio?",
+      "options": [
+        { "text": "Antonio begs for mercy on his knees.", "rationale": "Antonio remains entirely silent and unrepentant at the end, showing no change of heart.", "isCorrect": false },
+        { "text": "Ariel's observation of human suffering inspires Prospero's empathy.", "rationale": "When a non-human spirit expresses pity for the captives, Prospero realizes he must choose humanity over rage.", "isCorrect": true },
+        { "text": "Antonio offers to pay back all stolen funds.", "rationale": "No economic restitution is offered; Prospero simply reclaims his political title through leverage.", "isCorrect": false },
+        { "text": "Prospero forgets that Antonio overthrew him.", "rationale": "Prospero remembers perfectly, actively bringing it up to assert his current total dominance.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'Measure for Measure', why is Isabella's choice to remain a novice complex?",
+      "options": [
+        { "text": "She intends to marry Angelo secretly.", "rationale": "She loathes Angelo, actively calling for his execution once his corruption is exposed.", "isCorrect": false },
+        { "text": "Her absolute moral purity borders on rigid, cold spiritual pride.", "rationale": "She tells her brother his life is not worth her spiritual contamination, showing intense devotion to chastity.", "isCorrect": true },
+        { "text": "She does not know any of the church rules.", "rationale": "She is entering an incredibly strict order (Poor Clares) and fully understands its demands.", "isCorrect": false },
+        { "text": "She wants to run for political office.", "rationale": "Her goal is total withdrawal from the corrupt, secular world of Vienna, not governance.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "What does the death of the optimization figure, Enobarbus, represent in 'Antony'?",
+      "options": [
+        { "text": "The triumph of rational coldness over passion.", "rationale": "He dies of a broken heart out of pure guilt for abandoning Antony, proving logic cannot save him from emotion.", "isCorrect": true },
+        { "text": "An accidental tactical execution by Caesar.", "rationale": "He dies alone in a ditch from grief after Antony generously sends his remaining treasure after him.", "isCorrect": false },
+        { "text": "He switches sides back to Egypt.", "rationale": "He dies in Caesar's camp, entirely isolated and consumed by his own betrayal.", "isCorrect": false },
+        { "text": "A minor plot twist with zero thematic value.", "rationale": "His death signals that the calculated world of Octavius completely crushes old-school heroic loyalty.", "isCorrect": false }
+      ]
+    },
+    {
+      "question": "In 'King Lear', what profound truth does Lear discover only after losing his mind?",
+      "options": [
+        { "text": "He is a supernatural being who controls weather.", "rationale": "The storm proves to him that he is physically vulnerable and subject to the same laws as a beggar.", "isCorrect": false },
+        { "text": "Kingship is an absolute, divine biological reality.", "rationale": "He realizes that the court flattered him like a god, but stripped bare, he is just an ordinary man.", "isCorrect": true },
+        { "text": "He should have given even more land to Goneril.", "rationale": "He bitterly regrets trusting his deceptive daughters and banishing the truthful Cordelia.", "isCorrect": false },
+        { "text": "He can easily buy new friends with money.", "rationale": "In his madness, he learns that true loyalty belongs to the destitute, like Kent and the Fool.", "isCorrect": false }
+      ]
+    }
+];
+
+    // App State
+    let masterList = [...pool];
+    let currentRoundQuestions = [];
+    let currentIndex = 0;
+    let totalScore = 0;
+    let questionsAnsweredCount = 0;
+    let isShowingRationales = false;
+
+    // Shuffle implementation
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    // Launch Application
+    function initQuiz() {
+        shuffleArray(masterList);
+        currentIndex = 0;
+        totalScore = 0;
+        questionsAnsweredCount = 0;
+        loadNextRound();
+    }
+
+    // Prepare a 5-question set
+    function loadNextRound() {
+        isShowingRationales = false;
+        document.getElementById('score-banner').style.display = 'none';
+        
+        // Grab next slice of 5
+        currentRoundQuestions = masterList.slice(currentIndex, currentIndex + 5);
+        
+        // Update header tracking
+        const roundNum = Math.floor(currentIndex / 5) + 1;
+        document.getElementById('progress').innerText = `Round ${roundNum} of 10 — Question pool [${currentIndex + 1}-${currentIndex + currentRoundQuestions.length}/50]`;
+
+        const form = document.getElementById('quiz-form');
+        form.innerHTML = ''; // Wipe clean
+
+        currentRoundQuestions.forEach((q, idx) => {
+            const block = document.createElement('div');
+            block.className = 'question-block';
+            
+            const qText = document.createElement('div');
+            qText.className = 'question-text';
+            qText.innerText = `${currentIndex + idx + 1}. ${q.question}`;
+            block.appendChild(qText);
+
+            q.options.forEach((opt, optIdx) => {
+                const label = document.createElement('label');
+                label.className = 'option-label';
+                
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = `round-q-${idx}`;
+                radio.value = optIdx;
+                
+                label.appendChild(radio);
+                label.appendChild(document.createTextNode(opt.text));
+                block.appendChild(label);
+            });
+
+            // Structural container for rationale breakdowns
+            const exp = document.createElement('div');
+            exp.className = 'explanation';
+            exp.id = `explanation-${idx}`;
+            
+            let htmlContent = '<h4>Rationales:</h4><ul>';
+            q.options.forEach(opt => {
+                htmlContent += `<li><strong>${opt.text}</strong>: ${opt.rationale}</li>`;
+            });
+            htmlContent += '</ul>';
+            exp.innerHTML = htmlContent;
+            
+            block.appendChild(exp);
+            form.appendChild(block);
+        });
+
+        const btn = document.getElementById('action-btn');
+        btn.innerText = "Submit Answers";
+    }
+
+    // Route button action based on state
+    function handleButtonClick() {
+        if (!isShowingRationales) {
+            evaluateRound();
+        } else {
+            advanceQuiz();
+        }
+    }
+
+    // Process submitted round selections
+    function evaluateRound() {
+        let roundCorrectCount = 0;
+
+        currentRoundQuestions.forEach((q, idx) => {
+            const selected = document.querySelector(`input[name="round-q-${idx}"]:checked`);
+            if (selected) {
+                const selectedIdx = parseInt(selected.value);
+                if (q.options[selectedIdx].isCorrect) {
+                    roundCorrectCount++;
+                }
+            }
+            // Display rationales
+            document.getElementById(`explanation-${idx}`).style.display = 'block';
+        });
+
+        totalScore += roundCorrectCount;
+        questionsAnsweredCount += currentRoundQuestions.length;
+
+        // Render dynamic score banner
+        const banner = document.getElementById('score-banner');
+        banner.className = 'score-summary';
+        banner.innerText = `You scored ${roundCorrectCount} / ${currentRoundQuestions.length} this round! Running Total: ${totalScore} / ${questionsAnsweredCount}`;
+        banner.style.display = 'block';
+
+        isShowingRationales = true;
+        
+        // Contextual button swap
+        const btn = document.getElementById('action-btn');
+        if (currentIndex + 5 >= masterList.length) {
+            btn.innerText = "View Final Results";
+        } else {
+            btn.innerText = "Next 5 Questions";
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Route to next set or terminal screen
+    function advanceQuiz() {
+        currentIndex += 5;
+        if (currentIndex < masterList.length) {
+            loadNextRound();
+        } else {
+            renderFinalSummary();
+        }
+    }
+
+    // Terminal summary screen execution
+    function renderFinalSummary() {
+        document.getElementById('progress').innerText = "Quiz Complete!";
+        const form = document.getElementById('quiz-form');
+        form.innerHTML = `
+            <div style="text-align:center; padding: 20px 0;">
+                <p style="font-size: 16px; color:#4a5568;">You have completed all 50 structural character subtext questions!</p>
+                <div style="font-size: 32px; font-weight:bold; color:#2b6cb0; margin: 15px 0;">${totalScore} / 50</div>
+                <p style="font-size:14px; color:#718096;">Accuracy Rating: ${Math.round((totalScore/50)*100)}%</p>
+            </div>
+        `;
+        
+        document.getElementById('score-banner').style.display = 'none';
+        
+        const btn = document.getElementById('action-btn');
+        btn.innerText = "Restart Quiz";
+        btn.setAttribute('onclick', 'initQuiz()');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Core execution trigger
+    window.onload = initQuiz;
+</script>
+
+</body>
+</html>

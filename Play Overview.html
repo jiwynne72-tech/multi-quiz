@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>William Shakespeare: A Concise Play Guide</title>
+    <style>
+        :root {
+            --bg-color: #f7f9fa;
+            --text-color: #2c3e50;
+            --primary-color: #8e44ad;
+            --accent-tragedy: #c0392b;
+            --accent-comedy: #27ae60;
+            --accent-history: #d35400;
+            --accent-romance: #2980b9;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin: 0 0 0.5rem 0;
+            color: var(--text-color);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin: 0;
+        }
+
+        .category-section {
+            margin-bottom: 3rem;
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 3px solid var(--primary-color);
+            display: inline-block;
+        }
+
+        .category-section.tragedies .category-title { border-color: var(--accent-tragedy); color: var(--accent-tragedy); }
+        .category-section.comedies .category-title { border-color: var(--accent-comedy); color: var(--accent-comedy); }
+        .category-section.histories .category-title { border-color: var(--accent-history); color: var(--accent-history); }
+        .category-section.romances .category-title { border-color: var(--accent-romance); color: var(--accent-romance); }
+
+        .play-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 650px) {
+            .play-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .play-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .play-title {
+            font-size: 1.3rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: 700;
+        }
+
+        .play-meta {
+            font-size: 0.85rem;
+            color: #95a5a6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .play-summary {
+            font-size: 0.95rem;
+            margin: 0 0 1rem 0;
+            flex-grow: 1;
+        }
+
+        .play-tags {
+            font-size: 0.85rem;
+            font-style: italic;
+            color: #7f8c8d;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 0.75rem;
+        }
+
+        .play-tags strong {
+            color: var(--text-color);
+            font-style: normal;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>The Canonical Plays of William Shakespeare</h1>
+        <p>A refined reference guide mapping the core themes, plot structures, and major figures of the dramatic catalog.</p>
+    </header>
+
+    <section class="category-section tragedies">
+        <h2 class="category-title">The Major Tragedies</h2>
+        <div class="play-grid">
+            
+            <div class="play-card">
+                <h3 class="play-title">Hamlet</h3>
+                <div class="play-meta">c. 1599–1601</div>
+                <p class="play-summary">Prince Hamlet of Denmark seeks revenge for his father's murder by his uncle Claudius, who has usurped the throne and married Hamlet's mother. The drama serves as a profound investigation into existential dread, internal hesitation, madness, and moral corruption.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> Hamlet, Claudius, Gertrude, Ophelia, Horatio, Polonius</div>
+            </div>
+
+            <div class="play-card">
+                <h3 class="play-title">Macbeth</h3>
+                <div class="play-meta">c. 1606</div>
+                <p class="play-summary">Driven by a prophetic encounter with three weird sisters and spurred by his wife's fierce ambition, a Scottish general murders his king to claim the throne. His reign quickly dissolves into paranoid tyranny, guilt, and systematic slaughter.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> Macbeth, Lady Macbeth, Banquo, Macduff, Duncan</div>
+            </div>
+
+            <div class="play-card">
+                <h3 class="play-title">Othello</h3>
+                <div class="play-meta">c. 1603</div>
+                <p class="play-summary">The malicious ensign Iago systematically manipulates a celebrated Moorish general in the Venetian military into believing his innocent new bride, Desdemona, is unfaithful. A devastating psychological evaluation of jealousy, vulnerability, and deception.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> Othello, Iago, Desdemona, Cassio, Emilia</div>
+            </div>
+
+            <div class="play-card">
+                <h3 class="play-title">King Lear</h3>
+                <div class="play-meta">c. 1605–1606</div>
+                <p class="play-summary">An aging monarch abdicates power, dividing his realm among his daughters based on insincere public flattery. Stripped of structural authority, he is cast into a metaphorical and literal storm, confronting the raw, unadorned vulnerability of human nature.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> King Lear, Cordelia, Goneril, Regan, Edgar, Edmund</div>
+            </div>
+
+            <div class="play-card">
+                <h3 class="play-title">Romeo and Juliet</h3>
+                <div class="play-meta">c. 1595–1596</div>
+                <p class="play-summary">Two star-crossed lovers from warring noble families in Verona marry in secret. A series of volatile misunderstandings and structural constraints drives them to a double suicide, which ultimately resolves their families' ancient, destructive blood feud.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> Romeo, Juliet, Mercutio, Tybalt, Friar Lawrence</div>
+            </div>
+
+            <div class="play-card">
+                <h3 class="play-title">Julius Caesar</h3>
+                <div class="play-meta">c. 1599</div>
+                <p class="play-summary">Concerned that Caesar's unprecedented popularity will result in tyranny, a faction of high-ranking Roman senators orchestrates his assassination. The act plunges Rome into a complex ideological and military power struggle over the survival of the Republic.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> Brutus, Mark Antony, Julius Caesar, Cassius</div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="category-section comedies">
+        <h2 class="category-title">The Major Comedies</h2>
+        <div class="play-grid">
+
+            <div class="play-card">
+                <h3 class="play-title">Twelfth Night</h3>
+                <div class="play-meta">c. 1601–1602</div>
+                <p class="play-summary">Separated from her twin brother in a shipwreck, Viola disguises herself as a male page named Cesario in Illyria. She enters the service of Duke Orsino, initiating a chaotic comedic love triangle that examines gender roles and identity confusion.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> Viola (Cesario), Olivia, Orsino, Malvolio, Feste</div>
+            </div>
+
+            <div class="play-card">
+                <h3 class="play-title">The Merchant of Venice</h3>
+                <div class="play-meta">c. 1596–1597</div>
+                <p class="play-summary">A Venetian merchant defaults on a loan secured from an outsider moneylender, Shylock, who demands a literal pound of flesh as penalty. Classified historically as a comedy due to its marriage framework, the text functions as a complex commentary on justice and mercy.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> Shylock, Portia, Antonio, Bassanio</div>
+            </div>
+
+            <div class="play-card">
+                <h3 class="play-title">A Midsummer Night's Dream</h3>
+                <div class="play-meta">c. 1595–1596</div>
+                <p class="play-summary">Four young lovers and a troupe of amateur working-class actors wander into an enchanted forest outside Athens. They become caught in a volatile domestic dispute between the fairy king and queen, mediated by magical love juices and mischievous pranks.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> Puck, Oberon, Titania, Nick Bottom, Helena, Lysander</div>
+            </div>
+
+            <div class="play-card">
+                <h3 class="play-title">Much Ado About Nothing</h3>
+                <div class="play-meta">c. 1598–1599</div>
+                <p class="play-summary">Features a dual narrative structure: a pair of cynical wits are tricked into confessing their hidden love through a 'merry war' of banter, while an adversarial plot seeks to destroy a second, traditional marriage through structural slander at the altar.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> Beatrice, Benedick, Claudio, Hero, Don John</div>
+            </div>
+
+            <div class="play-card">
+                <h3 class="play-title">As You Like It</h3>
+                <div class="play-meta">c. 1599</div>
+                <p class="play-summary">Fleeing court persecution, the resourceful Rosalind adopts a male identity and escapes into the pastoral Forest of Arden. The setting becomes an experimental space for testing romantic conventions, exploring philosophy, and restoring political order.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> Rosalind (Ganymede), Orlando, Jaques, Celia</div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="category-section histories">
+        <h2 class="category-title">The Main Histories</h2>
+        <div class="play-grid">
+
+            <div class="play-card">
+                <h3 class="play-title">Henry IV, Part 1</h3>
+                <div class="play-meta">c. 1596–1597</div>
+                <p class="play-summary">As King Henry IV faces an organized domestic rebellion, his heir Prince Hal engages in youthful rebellion in London taverns alongside rowdy lowlifes. The narrative traces Hal's maturation into a credible leader on the battlefield at Shrewsbury.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> Prince Hal, Sir John Falstaff, King Henry IV, Hotspur</div>
+            </div>
+
+            <div class="play-card">
+                <h3 class="play-title">Henry V</h3>
+                <div class="play-meta">c. 1599</div>
+                <p class="play-summary">Focuses on the newly crowned King Henry V as he leaves his rowdy past behind to unite England and launch a highly calculated military campaign against France, culminating in an underdog victory at the historic Battle of Agincourt.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> King Henry V, Chorus, Princess Katherine</div>
+            </div>
+
+            <div class="play-card">
+                <h3 class="play-title">Richard III</h3>
+                <div class="play-meta">c. 1592–1593</div>
+                <p class="play-summary">Chronicles the manipulative, dark ascent of the physically deformed Duke of Gloucester as he plots, betrays, and assassinates his way to the English crown, establishing a short-lived tyranny that marks the conclusion of the Wars of the Roses.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> Richard III, Queen Elizabeth, Lady Anne, Richmond</div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="category-section romances">
+        <h2 class="category-title">The Late Romances / Tragicomedies</h2>
+        <div class="play-grid">
+
+            <div class="play-card">
+                <h3 class="play-title">The Tempest</h3>
+                <div class="play-meta">c. 1610–1611</div>
+                <p class="play-summary">The usurped Duke of Milan, Prospero, uses magical control and spirits on an isolated island to conjure a storm that shipwrecks his old enemies. Rather than exacting absolute revenge, he uses the event to engineer political reconciliation and voluntarily renounce his magic.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> Prospero, Ariel, Caliban, Miranda, Ferdinand</div>
+            </div>
+
+            <div class="play-card">
+                <h3 class="play-title">The Winter's Tale</h3>
+                <div class="play-meta">c. 1609–1611</div>
+                <p class="play-summary">A Sicilian king falls into sudden, unprompted paranoia, destroying his family and causing his infant daughter to be abandoned in a remote region. Over a sixteen-year span, the narrative shifts from raw tragedy to pastoral comedy, culminating in a famous scene of magical restoration.</p>
+                <div class="play-tags"><strong>Key Figures:</strong> Leontes, Hermione, Paulina, Perdita, Florizel</div>
+            </div>
+
+        </div>
+    </section>
+</div>
+
+</body>
+</html>
